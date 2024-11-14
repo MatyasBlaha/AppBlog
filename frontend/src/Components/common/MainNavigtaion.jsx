@@ -1,16 +1,16 @@
-import { NavigationLink } from "../UI/NavLink.jsx";
+import {NavigationLink} from "../UI/NavLink.jsx";
 
-export default function MainNavigation(){
+export default function MainNavigation() {
 
-    return(
+    return (
         <header>
             <nav>
                 <ul>
                     <NavigationLink to='/'>
-                        Blog
+                        HomePage
                     </NavigationLink>
-                    <NavigationLink to='/profile'>
-                        profile
+                    <NavigationLink to='posts'>
+                        posts
                     </NavigationLink>
                 </ul>
             </nav>
