@@ -1,12 +1,10 @@
 import { NavigationLink } from "../UI/NavLink.jsx";
 
-import {Navbar} from "react-bootstrap";
-
 export default function MainNavigation(){
 
     return(
         <header>
-            <Navbar>
+            <nav>
                 <ul>
                     <NavigationLink to='/'>
                         Blog
@@ -15,7 +13,7 @@ export default function MainNavigation(){
                         profile
                     </NavigationLink>
                 </ul>
-            </Navbar>
+            </nav>
         </header>
     )
 }
