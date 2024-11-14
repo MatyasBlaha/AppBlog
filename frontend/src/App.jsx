@@ -18,7 +18,7 @@ function App() {
                             {
                                 path: ':postId', children: [
                                     {index: true, element: <PostDetailPage/>}
-                                ],
+                                ]
                             }
                         ]
                     }
