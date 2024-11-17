@@ -1,0 +1,63 @@
+{
+  "posts": [
+    {
+      "id": "1",
+      "title": "first",
+      "body": "This is the first post.",
+      "authorId": "c85ee674-b6f9-4471-934f-b0cf5caa5641"
+    },
+    {
+      "id": "2",
+      "title": "second",
+      "body": "This is the second post.",
+      "author": "Jane Doe"
+    },
+    {
+      "id": "3",
+      "title": "third",
+      "body": "This is the third post.",
+      "author": "John Doe"
+    }
+  ],
+  "users": [
+    {
+      "email": "test1@test.com",
+      "name": "user test",
+      "password": "$2a$12$kh5Eob.5.o9hEHQD3N/0yuZa6jQdDiSPVR4wJy6./MedGrmcSnx2K",
+      "confirmPassword": "password",
+      "profession": "chef",
+      "terms": "on",
+      "id": "c85ee674-b6f9-4471-934f-b0cf5caa5641",
+      "posts": {
+        "created": ["1"],
+        "saved": ["2", "3"]
+      }
+    },
+    {
+      "email": "jane.doe@gmail.com",
+      "name": "Jane Doe",
+      "password": "$2a$12$kh5Eob.5.o9hEHQD3N/0yuZa6jQdDiSPVR4wJy6./MedGrmcSnx2K",
+      "confirmPassword": "password",
+      "profession": "chef",
+      "terms": "on",
+      "id": "99999999-9999-9999-9999-999999999999",
+      "posts": {
+        "created": ["2"],
+        "saved": ["1"]
+      }
+    },
+    {
+      "email": "john.doe@gmail.com",
+      "name": "John Doe",
+      "password": "$2a$12$kh5Eob.5.o9hEHQD3N/0yuZa6jQdDiSPVR4wJy6./MedGrmcSnx2K",
+      "confirmPassword": "password",
+      "profession": "chef",
+      "terms": "on",
+      "id": "88888888-8888-8888-8888-888888888888",
+      "posts": {
+        "created": ["3"],
+        "saved": ["1", "2"]
+      }
+    }
+  ]
+}

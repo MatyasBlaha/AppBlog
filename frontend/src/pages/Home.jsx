@@ -1,6 +1,9 @@
 import Button from "../Components/UI/Button.jsx";
+import {NavigationLink} from "../Components/UI/NavLink.jsx";
 
 function HomePage() {
+
+
 
     return (
         <div className='flex flex-col items-center justify-around' style={{height: '90vh'}}>
@@ -19,9 +22,9 @@ function HomePage() {
                 <div className='py-6'>
                     <p>or</p>
                 </div>
-                <Button textOnly>
+                <NavigationLink to='/posts'>
                     continue to blogs
-                </Button>
+                </NavigationLink>
             </div>
         </div>
     );
