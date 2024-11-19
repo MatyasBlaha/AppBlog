@@ -1,4 +1,4 @@
-fullstack application based on react, express server and json repository for data (for now). i use knuhovnz as redux, react router etc. 
+fullstack application based on react, express server and json repository for data (for now). i use libraries as redux, react router etc. 
 
 Version 0.1
   NEWS:
