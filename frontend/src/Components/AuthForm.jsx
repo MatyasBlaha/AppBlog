@@ -1,12 +1,12 @@
 import {Form, Link, useSearchParams, useNavigation, useActionData} from "react-router-dom";
 
-function AuthForm() {
+function AuthForm({ mode }) {
     const navigation = useNavigation()
 
 
 
     const [searchParams] = useSearchParams()
-    const isLogin = searchParams.get('mode') === 'login'
+    const isLogin = mode === 'login';
     const isSubmitting = navigation.state === 'submitting';
 
     let registerContent = (
