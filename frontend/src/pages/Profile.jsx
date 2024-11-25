@@ -1,4 +1,4 @@
-import {json, useLoaderData} from "react-router-dom";
+import {Form, json, useLoaderData} from "react-router-dom";
 import {defer} from "react-router";
 import {getAuthToken} from "../util/auth.js";
 
@@ -7,6 +7,11 @@ function ProfilePage() {
 
     return (
         <div>
+            <li>
+                <Form action='/logout' method='post'>
+                    <button>logout</button>
+                </Form>
+            </li>
             <p>{user.name}</p>
             <p>{user.email}</p>
             <p>{user.profession}</p>

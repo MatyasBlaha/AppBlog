@@ -1,13 +1,12 @@
 const bodyParser = require('body-parser');
 const express = require('express');
+const path = require('path');
 
-const authRoutes = require('./routes/auth');
-const eventRoutes = require('./routes/posts');
-const profileRoutes = require('./routes/profile'); // Add this line
+const postRouter = require('./routes/post')
+const authRouter = require('./routes/auth')
+const imageUploadRouter = require('./routes/imageUpload')
 
-require('dotenv').config();
 const app = express();
-
 
 
 app.use(bodyParser.json());
@@ -18,9 +17,16 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(authRoutes);
-app.use('/posts', eventRoutes);
-app.use('/profile', profileRoutes)
+app.use('/static', express.static('public', {
+    maxAge: '1y', // Cache static assets for 1 year
+    etag: true, // Enable ETag for cache validation
+    lastModified: true,
+}));
+
+app.use('/posts', postRouter)
+app.use('/auth', authRouter)
+app.use('/imageUpload', imageUploadRouter)
+
 
 app.use((error, req, res, next) => {
     const status = error.status || 500;

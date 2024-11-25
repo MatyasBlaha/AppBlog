@@ -7,7 +7,7 @@ export default function PostsNavigation(){
             <nav>
                 <ul className='flex gap-4'>
                         <NavigationLink to='/posts' end>all posts</NavigationLink>
-                        <NavigationLink to='/posts/create'>create Post</NavigationLink>
+                        <NavigationLink to='/posts/new'>create Post</NavigationLink>
                 </ul>
             </nav>
         </header>

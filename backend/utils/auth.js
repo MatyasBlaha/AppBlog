@@ -1,13 +1,17 @@
 const { sign, verify } = require('jsonwebtoken');
 const { compare } = require('bcryptjs');
 const { NotAuthError } = require('./errors');
-require('dotenv').config();
 
-const KEY = process.env.AUTH_KEY
+const KEY = process.env.JWT_SECRET;
 
-function createJSONToken(email) {
-    return sign({ email }, KEY, { expiresIn: '1h' });
+function createJSONToken(userId, email) {
+    if (!KEY) {
+        console.error('JWT_SECRET is undefined.');
+        throw new Error('Missing JWT_SECRET in environment variables.');
+    }
+    return sign({ userId, email }, KEY, { expiresIn: '6h' });
 }
+
 
 function validateJSONToken(token) {
     return verify(token, KEY);
@@ -35,6 +39,7 @@ function checkAuthMiddleware(req, res, next) {
     try {
         const validatedToken = validateJSONToken(authToken);
         req.token = validatedToken;
+        req.userId = validatedToken.userId;
     } catch (error) {
         console.log('NOT AUTH. TOKEN INVALID.');
         return next(new NotAuthError('Not authenticated.'));
