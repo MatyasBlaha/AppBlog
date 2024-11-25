@@ -1,16 +1,39 @@
-fullstack application based on react, express server and json repository for data (for now). i use libraries as redux, react router etc. 
+# Full-Stack Application
 
-Version 0.1
-  NEWS:
-    Loading all posts
-    user registration and login
-    showing user's profile with authorization
-Version 0.2
-  NEWS:
-    Add postgresSQL database
-    add Prisma for manage postgres databse
-    post images on cloud: Cloudinary
-    show posts and post's details (images load by url from databse => url of cloud stored image)
-    adding posts by users
-    show comment, replies on comments, show author of post in comment section
-    adding new comments, replying on comments, loading more comments
+## Version 0.1
+### Features:
+- **Loading all posts**  
+  Load and display all posts in the application.  
+- **User Registration and Login**  
+  Users can create an account and log in securely.  
+- **User's Profile with Authorization**  
+  Display user profile information with secure access.  
+
+---
+
+## Version 0.2
+### Features:
+- **PostgreSQL Database**  
+  Integrated a PostgreSQL database for data storage.  
+- **Prisma**  
+  Use Prisma ORM for managing the database.  
+- **Cloudinary Integration**  
+  Upload and manage images in the cloud.  
+- **Post Details**  
+  Show posts with detailed views, including images fetched from Cloudinary.  
+- **Add Posts**  
+  Users can create and upload posts.  
+- **Commenting System**  
+  - Display comments and replies.  
+  - Show the post author in the comment section.  
+  - Users can add new comments or reply to existing ones.  
+- **Load More Comments**  
+  Pagination for comments to load them incrementally.  
+
+---
+
+## Technologies Used
+- **Frontend**: React, React Router, Redux
+- **Backend**: Express.js
+- **Database**: PostgreSQL, Prisma
+- **Image Hosting**: Cloudinary
