@@ -1,6 +1,6 @@
 # Full-Stack Application
 
-## Version 0.1
+## Version 0.1 - 19.11.2024
 ### Features:
 - **Loading all posts**  
   Load and display all posts in the application.  
@@ -11,7 +11,7 @@
 
 ---
 
-## Version 0.2
+## Version 0.2 - 25.11.2024
 ### Features:
 - **PostgreSQL Database**  
   Integrated a PostgreSQL database for data storage.  
