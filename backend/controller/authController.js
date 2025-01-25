@@ -51,7 +51,6 @@ const signup = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    console.log(req.body)
     const {
         email,
         password
@@ -67,11 +66,16 @@ const login = async (req, res) => {
             where: { email }
         });
 
-        if(!user || !(await bcrypt.compare(password, user.password))){
+        if(!user) {
+            return res.status(400).json({ message: 'User not found.' });
+        }
+
+
+        if (!user || !(await bcrypt.compare(password, user.password))) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
 
-        const token = createJSONToken(user.id, user.email);
+        const token = createJSONToken(user.id, user.email, user.role);
 
         res.json({ token });
     } catch (error) {
@@ -80,4 +84,30 @@ const login = async (req, res) => {
     }
 }
 
-module.exports = { signup, login }
+
+const getProfile = async (req, res) => {
+    const profileId = req.params.id;
+
+    try {
+        const profile = await prisma.user.findUnique({
+            where: { id: profileId },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+            }
+        })
+
+        console.log(profile)
+
+    if(!profile){
+        return res.status(404).json({ message: 'Profile not found.' });
+    }
+
+    res.json(profile);
+    } catch(error){
+        res.status(500).json({ message: 'Internal server error'})
+    }
+}
+
+module.exports = { signup, login, getProfile }

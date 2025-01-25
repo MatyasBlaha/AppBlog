@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,34 +7,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id       Int       @id @default(autoincrement())
-  email    String    @unique
+  id       String       @id @default(uuid())
+  email    String       @unique
   password String
   name     String
-  role     Role      @default(USER)
+  role     Role         @default(USER)
   posts    Post[]
-  profile  Profile?
   comments Comment[]
   likes    Like[]
+
+  following Follow[] @relation("UserFollowing")
+  followers Follow[] @relation("UserFollowers")
 }
 
-model Profile {
-  id     Int    @id @default(autoincrement())
-  bio    String
-  user   User   @relation(fields: [userId], references: [id])
-  userId Int    @unique
+model Follow {
+  id           Int     @id @default(autoincrement())
+  followerId   String
+  followingId  String
+
+  follower     User @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following    User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
 }
 
 model Post {
-  id         Int        @id @default(autoincrement())
+  id         String     @id @default(uuid())
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   title      String
   published  Boolean    @default(false)
   author     User       @relation(fields: [authorId], references: [id])
-  authorId   Int
+  authorId   String
   categories Category[]
   content    Content[]  @relation("PostContent")
   comments   Comment[]
@@ -48,44 +47,43 @@ model Post {
 }
 
 model Content {
-  id       Int      @id @default(autoincrement())
+  id       String     @id @default(uuid())
   type     String
   content  String?
   imageUrl String?
   order    Int
-  postId   Int
-  post     Post     @relation("PostContent", fields: [postId], references: [id])
+  postId   String
+  post     Post       @relation("PostContent", fields: [postId], references: [id])
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String @unique
+  id    String   @id @default(uuid())
+  name  String   @unique
   posts Post[]
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        String    @id @default(uuid())
   content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    Int
-  parentId  Int?
-  parent    Comment? @relation("CommentReplies", fields: [parentId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  String
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    String
+  parentId  String?
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
   replies   Comment[] @relation("CommentReplies")
 }
 
-
 model Like {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  post      Post     @relation(fields: [postId], references: [id])
-  postId    Int
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(fields: [userId], references: [id])
+  userId    String
+  post      Post      @relation(fields: [postId], references: [id])
+  postId    String
 }
 
 enum Role {

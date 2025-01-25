@@ -10,15 +10,10 @@ export default function NewPostForm({ onFormChange }) {
 
     const [categories, setCategories] = useState([""]);
     const [sections, setSections] = useState([{ type: "text", content: "" }]);
-
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     useEffect(() => {
-        if (isSubmitting) {
-            setIsModalOpen(true);
-        } else {
-            setIsModalOpen(false);
-        }
+        setIsModalOpen(isSubmitting);
     }, [isSubmitting]);
 
     function handleCategoryChange(index, value) {
@@ -28,69 +23,83 @@ export default function NewPostForm({ onFormChange }) {
     }
 
     function removeCategory(index) {
-        const updatedCategories = categories.filter((_, i) => i !== index);
-        setCategories(updatedCategories);
+        setCategories(categories.filter((_, i) => i !== index));
     }
 
     function addCategoryField() {
-        const updatedCategories = [...categories, ""];
-        setCategories(updatedCategories);
+        setCategories([...categories, ""]);
     }
 
     function handleTextChange(index, value) {
         const updatedSections = [...sections];
-        updatedSections[index].type = "text";
-        updatedSections[index].content = value;
+        updatedSections[index] = { type: "text", content: value };
         setSections(updatedSections);
     }
 
     function handleImageChange(index, file) {
         const updatedSections = [...sections];
-        updatedSections[index].type = "image";
-        updatedSections[index].content = file;
+        updatedSections[index] = { type: "image", content: file };
         setSections(updatedSections);
     }
 
     function handleAddText() {
-        const updatedSections = [...sections, { type: "text", content: "" }];
-        setSections(updatedSections);
+        setSections([...sections, { type: "text", content: "" }]);
     }
 
     function handleAddImage() {
-        const updatedSections = [...sections, { type: "image", content: null }];
-        setSections(updatedSections);
+        setSections([...sections, { type: "image", content: null }]);
     }
 
     return (
-        <>
-            <Form method="post" encType="multipart/form-data">
-                <Input type="text" id="title" name="title" labelText="Title" required />
-                <div className="py-36">
+        <div className="max-w-4xl mx-auto p-6 bg-gray-800 text-gray-200 rounded-lg shadow-lg">
+            <h1 className="text-3xl font-bold text-center mb-6">Create a New Post</h1>
+
+            <Form method="post" encType="multipart/form-data" className="space-y-8">
+                {/* Title Field */}
+                <div>
+                    <Input
+                        type="text"
+                        id="title"
+                        name="title"
+                        labelText="Post Title"
+                        className="w-full border border-gray-600 p-2 rounded-md bg-gray-700 text-gray-200"
+                        required
+                    />
+                </div>
+
+                {/* Sections for Text and Image */}
+                <div className="space-y-6">
                     {sections.map((section, index) => (
-                        <div key={index}>
+                        <div key={index} className="space-y-2">
                             {section.type === "text" && (
-                                <Input
-                                    type="textarea"
-                                    name={`section.text.${index}`}
-                                    value={section.content}
-                                    onChange={(e) => handleTextChange(index, e.target.value)}
-                                    placeholder="Write text here"
-                                    required
-                                />
+                                <div>
+                                    <Input
+                                        type="textarea"
+                                        name={`section.text.${index}`}
+                                        value={section.content}
+                                        onChange={(e) =>
+                                            handleTextChange(index, e.target.value)
+                                        }
+                                        placeholder="Write your text here..."
+                                        className="w-full border border-gray-600 rounded-md bg-gray-700 text-gray-200 p-2"
+                                    />
+                                </div>
                             )}
                             {section.type === "image" && (
-                                <div>
+                                <div className="space-y-2">
                                     <Input
                                         type="file"
                                         name={`section.image.${index}`}
-                                        onChange={(e) => handleImageChange(index, e.target.files[0])}
-                                        required
+                                        onChange={(e) =>
+                                            handleImageChange(index, e.target.files[0])
+                                        }
+                                        className="block w-full text-gray-200"
                                     />
                                     {section.content && (
                                         <img
                                             src={URL.createObjectURL(section.content)}
                                             alt={`Preview ${index}`}
-                                            style={{ width: "100px", height: "auto", marginTop: "10px" }}
+                                            className="w-32 h-auto rounded-md shadow-md"
                                         />
                                     )}
                                 </div>
@@ -98,38 +107,92 @@ export default function NewPostForm({ onFormChange }) {
                         </div>
                     ))}
 
-                    <Button onClick={handleAddText} type="button">
-                        Add text
-                    </Button>
-                    <Button onClick={handleAddImage} type="button">
-                        Add image
+                    {/* Buttons to Add Sections */}
+                    <div className="flex space-x-4">
+                        <Button
+                            onClick={handleAddText}
+                            type="button"
+                            className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md"
+                        >
+                            Add Text
+                        </Button>
+                        <Button
+                            onClick={handleAddImage}
+                            type="button"
+                            className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-md"
+                        >
+                            Add Image
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Categories */}
+                <div className="space-y-4">
+                    <h2 className="text-xl font-semibold">Categories</h2>
+                    {categories.map((category, index) => (
+                        <div key={index} className="flex items-center space-x-2">
+                            <Input
+                                type="text"
+                                name={`categories[${index}]`}
+                                value={category}
+                                onChange={(e) =>
+                                    handleCategoryChange(index, e.target.value)
+                                }
+                                className="w-full border border-gray-600 p-2 rounded-md bg-gray-700 text-gray-200"
+                                required
+                            />
+                            <Button
+                                type="button"
+                                onClick={() => removeCategory(index)}
+                                className="bg-red-500 hover:bg-red-600 px-2 py-1 rounded-md text-white"
+                            >
+                                Remove
+                            </Button>
+                        </div>
+                    ))}
+                    <Button
+                        type="button"
+                        onClick={addCategoryField}
+                        className="bg-blue-500 hover:bg-blue-600 px-4 py-2 rounded-md"
+                    >
+                        Add Category
                     </Button>
                 </div>
 
-                {categories.map((category, index) => (
-                    <div key={index} className="flex">
-                        <Input
-                            type="text"
-                            name={`categories[${index}]`}
-                            value={category}
-                            onChange={(e) => handleCategoryChange(index, e.target.value)}
-                            className="border p-2 flex-grow"
-                            required
-                        />
-                        <Button type="button" onClick={() => removeCategory(index)}>
-                            Remove
-                        </Button>
-                    </div>
-                ))}
+                {/* Published Checkbox */}
+                <div className="flex items-center space-x-2">
+                    <Input
+                        type="checkbox"
+                        id="published"
+                        name="published"
+                        className="w-5 h-5"
+                    />
+                    <label
+                        htmlFor="published"
+                        className="text-gray-300 cursor-pointer"
+                    >
+                        Published
+                    </label>
+                </div>
 
-                <Button type="button" onClick={addCategoryField}>
-                    Add category
+                {/* Submit Button */}
+                <Button
+                    disabled={isSubmitting}
+                    className={`w-full py-2 text-lg rounded-md ${
+                        isSubmitting
+                            ? "bg-gray-600 cursor-not-allowed"
+                            : "bg-blue-500 hover:bg-blue-600"
+                    }`}
+                >
+                    {isSubmitting ? "Submitting..." : "Create Post"}
                 </Button>
-                <Input type="checkbox" id="published" name="published" spanText="Published" />
-                <Button disabled={isSubmitting}>{isSubmitting ? "Wait..." : "Create"}</Button>
             </Form>
 
-            <LoadingModal isOpen={isModalOpen} message="Uploading post, please wait..." />
-        </>
+            {/* Loading Modal */}
+            <LoadingModal
+                isOpen={isModalOpen}
+                message="Uploading post, please wait..."
+            />
+        </div>
     );
 }

@@ -1,9 +1,10 @@
 import {Outlet} from "react-router";
+import ProfileNavigation from "../../Components/profile/ProfileNavigation.jsx";
 
 function ProfileRootLayout() {
     return (
         <div>
-            <h2>Profile Page</h2>
+            <ProfileNavigation/>
             <Outlet />
         </div>
     );

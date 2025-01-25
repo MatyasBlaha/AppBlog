@@ -1,64 +1,30 @@
 import React, { useState, useEffect } from "react";
 import CommentItem from "./CommentItem";
+import {useParams} from "react-router";
 
-function CommentsList({ post }) {
-    const [comments, setComments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [loadedCount, setLoadedCount] = useState(10);
+function CommentsList({ initialComment = [] }) {
+    const params = useParams()
 
-    const loadComments = async (take = 10, skip = 0) => {
-        try {
-            const response = await fetch(
-                `http://localhost:8080/posts/${post.id}/comments?parentId=null&take=${take}&skip=${skip}`
-            );
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Failed to load comments", error);
-            return [];
-        }
-    };
+    const [comments, setComments] = useState(initialComment);
 
-    useEffect(() => {
-        async function fetchInitialComments() {
-            setLoading(true);
-            const initialComments = await loadComments(loadedCount);
-            setComments(initialComments);
-            setLoading(false);
-        }
-
-        fetchInitialComments();
-    }, [post.id, loadedCount]);
-
-    const handleLoadMore = async () => {
-        setLoadingMore(true);
-        const newComments = await loadComments(10, comments.length);
-        setComments((prev) => [...prev, ...newComments]);
-        setLoadingMore(false);
-    };
+    function onDeleteComment(commentId){
+        setComments((prevComment) => prevComment.filter((comment) => comment.id !== commentId))
+    }
 
     return (
         <>
-            <h2>Comments</h2>
-            {loading ? (
-                <p>Loading comments...</p>
-            ) : comments.length > 0 ? (
-                comments.map((comment) => (
-                    <CommentItem
-                        key={comment.id}
-                        comment={comment}
-                        postId={post.id}
-                    />
-                ))
+            <h2>Comments: {comments.length}</h2>
+            {comments.length === 0 ? (
+                <p>No comments yet</p>
             ) : (
-                <p>No comments yet. Be the first to comment!</p>
-            )}
-
-            {comments.length > 0 && (
-                <button onClick={handleLoadMore} disabled={loadingMore}>
-                    {loadingMore ? "Loading..." : "Load More Comments"}
-                </button>
+                comments.map((comment) => (
+                        <CommentItem
+                            key={comment.id}
+                            comment={comment}
+                            postId={params.postId}
+                            onDeleteComment={onDeleteComment}
+                        />
+                    ))
             )}
         </>
     );

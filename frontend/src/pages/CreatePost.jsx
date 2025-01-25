@@ -1,15 +1,12 @@
 import React, {useState} from "react";
 import NewPostForm from "../Components/posts/NewPostForm.jsx";
 import {json} from "react-router-dom";
+import {apiClient, uploadFiles} from "../util/apiCalls.js";
 
 export default function CreatePostPage() {
 
-
-
-
     return (
         <div>
-            <h2>Create post</h2>
             <NewPostForm  />
         </div>
     );
@@ -39,44 +36,19 @@ export async function action({ request }) {
     }
 
     const filteredSections = sections.filter(Boolean);
-
     const imageSections = filteredSections.filter((section) => section.type === 'image' && section.imageUrl instanceof File)
 
 
     for(const imageSection of imageSections) {
 
         const file = imageSection.imageUrl;
-        console.log(file)
 
         const uploadFormData = new FormData();
         uploadFormData.append("image", file);
 
-        try {
-            console.log(uploadFormData)
+        const response = await uploadFiles(uploadFormData)
 
-            const response = await fetch("http://localhost:8080/imageUpload", {
-                method: "POST",
-                body: uploadFormData,
-            });
-
-            if(!response.ok){
-                throw json(
-                    {message: 'failed to upload images on cloudinary'},
-                    {status: 404}
-                )
-            }
-
-            const result = await response.json();
-            console.log(result)
-
-            imageSection.imageUrl = result.url;
-        } catch(error) {
-            console.error('error while uploading image:', error);
-            throw json(
-                {message: 'failed to upload images on cloudinary'},
-                {status: 500}
-            )
-        }
+        imageSection.imageUrl = response
     }
 
 
@@ -85,6 +57,8 @@ export async function action({ request }) {
         order: index + 1
     }))
 
+    console.log(orderedSections)
+
     const data = {
         title,
         content: orderedSections,
@@ -92,32 +66,18 @@ export async function action({ request }) {
         categories
     };
 
+    console.log(data)
+
     const token = localStorage.getItem('token');
 
-    try {
-
-        const response = await fetch('http://localhost:8080/posts', {
+        const response = await apiClient('/posts', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
+                'Authorization': 'Bearer '+ token
             },
             body: JSON.stringify(data)
         })
 
-        if(!response.ok){
-            throw json(
-                {message: 'could not fetch'},
-                { status: 404}
-            )
-        } else {
-            return response
-        }
+        return response;
 
-    } catch(error) {
-        throw json(
-            {message: 'failed to upload'},
-            {status: 500}
-        )
-    }
 }

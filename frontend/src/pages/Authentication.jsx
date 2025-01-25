@@ -1,5 +1,6 @@
 import AuthForm from "../Components/AuthForm.jsx";
 import {json, redirect, useSearchParams} from "react-router-dom";
+import {apiClient} from "../util/apiCalls.js";
 
 function AuthenticationPage() {
     const [searchParams] = useSearchParams();
@@ -11,22 +12,22 @@ function AuthenticationPage() {
 
 export default AuthenticationPage;
 
-export async function action({request}) {
+export async function action({ request }) {
     const searchParams = new URL(request.url).searchParams;
     const mode = searchParams.get('mode') || 'login';
 
     if (mode !== 'login' && mode !== 'signup') {
-        throw json(
-            {message: 'Unsupported mode'},
-            {status: 422}
-        )
+        return json(
+            { message: 'Unsupported mode' },
+            { status: 422 }
+        );
     }
 
     const data = await request.formData();
     const authData = {
         email: data.get('email'),
-        password: data.get('password')
-    }
+        password: data.get('password'),
+    };
 
     if (mode === 'signup') {
         authData.confirmPassword = data.get('confirmPassword');
@@ -35,33 +36,29 @@ export async function action({request}) {
         authData.terms = data.get('terms');
     }
 
-
-    const response = await fetch('http://localhost:8080/auth/' + mode, {
+    const response = await apiClient(`/auth/${mode}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(authData)
+        body: JSON.stringify(authData),
     });
 
-    if (response.status === 422 || response.status === 401) {
-        return response;
+    if (!response.success) {
+        return json(
+            { message: response.error },
+            { status: 400 }
+        );
     }
 
-    if (!response.ok) {
-        throw json(
-            {message: 'Authentication failed'},
-            {status: 500}
-        )
-    }
+    if(mode === 'login') {
+        const token = response.data.token;
 
-    const resData = await response.json()
-    console.log(resData)
-    const token = resData.token;
-
-    if(token) {
         localStorage.setItem('token', token);
+        const expiration = new Date();
+        expiration.setHours(expiration.getHours() + 6);
+        localStorage.setItem('expiration', expiration.toISOString());
+
+        return redirect('/');
+    } else {
+        return redirect('/auth?mode=login');
     }
 
-    return redirect('/')
 }

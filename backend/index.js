@@ -1,14 +1,17 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 const postRouter = require('./routes/post')
 const authRouter = require('./routes/auth')
 const imageUploadRouter = require('./routes/imageUpload')
+const commentsRouter = require('./routes/comments')
+const profileRouter = require('./routes/profile')
 
 const app = express();
 
-
+app.use(express.json());
 app.use(bodyParser.json());
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,7 +26,17 @@ app.use('/static', express.static('public', {
     lastModified: true,
 }));
 
+
+app.use(cors({
+    origin: 'http://localhost:5173', // Allow requests from your frontend
+    methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+
+app.use('/comments', commentsRouter)
 app.use('/posts', postRouter)
+app.use('/profile', profileRouter)
 app.use('/auth', authRouter)
 app.use('/imageUpload', imageUploadRouter)
 

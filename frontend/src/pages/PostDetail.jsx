@@ -3,21 +3,48 @@ import {defer, useRouteLoaderData} from "react-router";
 import PostItem from "../Components/posts/PostItem.jsx";
 import CommentForm from "../Components/posts/CommentForm.jsx";
 import CommentsList from "../Components/posts/CommentsList.jsx";
+import {apiClient} from "../util/apiCalls.js";
+import {Suspense, useState} from "react";
+
 
 function PostDetailPage() {
-    const post = useLoaderData()
+    const { post, comments } = useLoaderData();
+    const [showComments, setShowComments] = useState(false);
+
+    const toggleComments = () => {
+        setShowComments((prev) => !prev);
+    };
 
     return (
         <div>
-            <Link to="..">Back</Link>
-            <PostItem post={post}/>
+            <Suspense fallback={<p style={{ textAlign: "center" }}>Loading...</p>}>
+                <Await resolve={post}>
+                    <Link to="..">Back</Link>
+                    <PostItem post={post} />
+                </Await>
+            </Suspense>
+
+            <div className="mt-8">
+                <button
+                    onClick={toggleComments}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                >
+                    {showComments ? "Hide Comments" : `Show Comments: ${comments.length}`}
+                </button>
+
+                {showComments && (
+                    <Suspense fallback={<p style={{ textAlign: "center" }}>Loading comments...</p>}>
+                        <Await resolve={comments}>
+                            <div className="mt-8">
+                                <CommentsList initialComment={comments} />
+                            </div>
+                        </Await>
+                    </Suspense>
+                )}
+            </div>
 
             <div className="mt-16">
-                <CommentForm/>
-            </div>
-            
-            <div className="mt-8">
-                <CommentsList post={post}/>
+                {showComments && <CommentForm />}
             </div>
         </div>
     );
@@ -27,69 +54,50 @@ export default PostDetailPage;
 
 
 export async function addCommentAction({params, request}) {
-    const formData = await request.formData()
+    const formData = await request.formData();
     const formEntries = Object.fromEntries(formData.entries());
+    const id = params.postId;
+    const token = localStorage.getItem("token");
 
-    const id = params.postId
-    const token = localStorage.getItem('token')
+    const response = await apiClient(`/comments/${id}/comment`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({content: formEntries.content}),
+    });
 
-    try {
-
-        const response = await fetch(`http://localhost:8080/posts/${id}/comment`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-            },
-            body: JSON.stringify({content: formEntries.content}),
-        })
-
-        if (!response.ok) {
-            throw json(
-                {message: 'could not add comment'},
-                {status: 500}
-            );
-        }
-
-        const data = response.json;
-        console.log(data);
-        return data;
-
-    } catch (error) {
-        throw json(
-            {message: 'failed to add comment'},
-            {status: 500}
-        );
-    }
-
+    return response;
 }
 
-export async function loadPost(id) {
 
-    const response = await fetch('http://localhost:8080/posts/' + id, {
+export async function loader({ params }) {
+    const id = params.postId;
+
+    return defer({
+        post: await loadPost(id),
+        comments: await loadComments(id),
+    });
+}
+
+
+export async function loadPost(id) {
+    const response = await apiClient(`/posts/${id}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
         },
     })
-    if (!response.ok) {
-        throw json(
-            {message: 'failed to fetch detailed post'},
-            {status: 500}
-        );
-    }
-
-    const data = await response.json()
-    return data;
-
+    return response.data
 }
 
-export async function loader({params}) {
-    const id = params.postId
-
-    try {
-        return loadPost(id)
-    } catch (error) {
-        return null
-    }
+export async function loadComments(id) {
+    const response = await apiClient(`/comments/${id}/comments`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    return response.data;
 }

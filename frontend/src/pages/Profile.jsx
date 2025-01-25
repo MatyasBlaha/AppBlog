@@ -1,17 +1,40 @@
-import {Form, json, useLoaderData} from "react-router-dom";
-import {defer} from "react-router";
-import {getAuthToken} from "../util/auth.js";
+import {Form, json, Link, useLoaderData} from "react-router-dom";
+import {getAuthToken, getUserId} from "../util/auth.js";
+import {apiClient} from "../util/apiCalls.js";
 
 function ProfilePage() {
-    const {user} = useLoaderData()
+    /**
+     * @type {Object}
+     * @property {string} id
+     * @property {string} name
+     * @property {string} email
+     * @property {string} profession
+     */
+    const user = useLoaderData()
+
+    const userId = getUserId()
+    const userIdForeign = user.id
+    const token = getAuthToken()
+
+    //TODO: add follow other users logic
+    async function follow(){
+        const response = await apiClient(`/profile/follow/${userIdForeign}/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            }
+        });
+    }
 
     return (
         <div>
-            <li>
-                <Form action='/logout' method='post'>
-                    <button>logout</button>
-                </Form>
-            </li>
+            {userId !== userIdForeign && (
+                <button onClick={follow}>
+                    follow
+                </button>
+            )
+            }
             <p>{user.name}</p>
             <p>{user.email}</p>
             <p>{user.profession}</p>
@@ -21,33 +44,45 @@ function ProfilePage() {
 
 export default ProfilePage;
 
-async function fetchUser(id) {
+/**
+ * Loads the profile data for a user (either their own profile or another user's profile).
+ * @async
+ * @function profileLoader
+ * @param {object} context
+ * @param {object} context.params
+ * @param {String} context.params.userId
+ * @returns {Promise<*>}
+ * @throws {Error}
+ */
+
+export async function profileLoader({ params }) {
     const token = getAuthToken();
+    const userIsActual = getUserId()
+    const {userId} = params
 
-    const response = await fetch('http://localhost:8080/profile/' + id, {
-        method: 'GET',
-        headers: {
-            'Authorization': 'Bearer ' + token
-        }
-    });
-
-    if (!response.ok) {
-        throw json(
-            { message: 'Could not fetch details for selected event.' },
-            {
-                status: 500,
+    //profile of logged in user
+    if (String(userIsActual) === userId) {
+        const response = await apiClient(`/auth/profile/${userIsActual}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer '+ token
             }
-        );
+        })
+
+        return response.data
+
+        // foreign profile
     } else {
-        const resData = await response.json();
-        return resData
+        const response = await apiClient(`/profile/${userId}/foreign`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer '+ token
+            }
+        })
+
+        return response.data
     }
+
 }
 
-export async function loader({ request, params }) {
-    const id = params.profileId;
 
-    return defer({
-        user: await fetchUser(id),
-    });
-}
