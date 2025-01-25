@@ -32,6 +32,21 @@
 
 ---
 
+## Version 0.3 - 25.1.2025
+### Features:
+- **Profile**  
+  Create Profile, user's posts list
+- **Profile for admin**  
+  Users list, admin can change rles for all users
+### Style:
+- **Redesign**  
+  Whole appliacation unite into one style
+### Bugs:
+- **Comments**  
+  Repair bugs with comments
+
+---
+
 ## Technologies Used
 - **Frontend**: React, React Router, Redux
 - **Backend**: Express.js
