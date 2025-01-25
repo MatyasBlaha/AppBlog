@@ -7,6 +7,8 @@ const addComment = async (req, res) => {
     const { content, parentId } = req.body
     const userId = req.userId;
 
+    console.log(postId)
+
 
     try {
         const comment = await prisma.comment.create({
@@ -27,7 +29,7 @@ const addComment = async (req, res) => {
     }
 }
 
-const getComments = async (req, res) => {
+const  getComments = async (req, res) => {
     const postId = req.params.id;
     const { parentId, take = 10, skip = 0 } = req.query;
 
