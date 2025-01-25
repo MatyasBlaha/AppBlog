@@ -1,6 +1,7 @@
 import PostList from "../Components/posts/PostsList.jsx";
 import {Await, json, useLoaderData} from "react-router-dom";
 import {Suspense} from "react";
+import {apiClient} from "../util/apiCalls.js";
 
 function PostsPage() {
     const posts = useLoaderData()
@@ -19,16 +20,9 @@ function PostsPage() {
 export default PostsPage;
 
 export async function postsLoader() {
+    const response = await apiClient('/posts', {
+        method: 'GET',
+    })
 
-    const response = await fetch('http://localhost:8080/posts')
-
-    if (!response.ok) {
-        throw json(
-            {message: 'failed to fetch posts'},
-            {status: 500}
-        );
-    } else {
-        const resData = await response.json();
-        return resData;
-    }
+    return response.data;
 }

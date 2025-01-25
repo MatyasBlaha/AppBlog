@@ -4,12 +4,12 @@ const { NotAuthError } = require('./errors');
 
 const KEY = process.env.JWT_SECRET;
 
-function createJSONToken(userId, email) {
+function createJSONToken(userId, email, role) {
     if (!KEY) {
         console.error('JWT_SECRET is undefined.');
         throw new Error('Missing JWT_SECRET in environment variables.');
     }
-    return sign({ userId, email }, KEY, { expiresIn: '6h' });
+    return sign({ userId, email, role }, KEY, { expiresIn: '6h' });
 }
 
 
@@ -40,6 +40,7 @@ function checkAuthMiddleware(req, res, next) {
         const validatedToken = validateJSONToken(authToken);
         req.token = validatedToken;
         req.userId = validatedToken.userId;
+        req.role = validatedToken.role
     } catch (error) {
         console.log('NOT AUTH. TOKEN INVALID.');
         return next(new NotAuthError('Not authenticated.'));
