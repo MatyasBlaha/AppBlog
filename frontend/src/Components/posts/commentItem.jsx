@@ -40,24 +40,26 @@ function CommentItem({comment, postId, onDeleteComment}) {
 
     const handleReplySubmit = async () => {
         try {
+            const token = localStorage.getItem("token");
             const response = await fetch(`http://localhost:8080/comments/${postId}/comment`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({content: replyContent, parentId: comment.id}),
+                body: JSON.stringify({ content: replyContent, parentId: comment.id }),
             });
+
+            console.log(response)
 
             if (!response.ok) {
                 throw new Error("Failed to add reply");
             }
-           if(response.ok){
-               const newReply = await response.json();
-               setReplies((prevReplies) => [...prevReplies, newReply]);
-               setReplyContent("");
-               setReplying(false);
-           }
+
+            const newReply = await response.json();
+            setReplies((prevReplies) => [...prevReplies, newReply]);
+            setReplyContent("");
+            setReplying(false);
         } catch (error) {
             console.error("Error submitting reply:", error);
         }

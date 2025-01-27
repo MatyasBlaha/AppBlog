@@ -21,14 +21,14 @@ app.use((req, res, next) => {
 });
 
 app.use('/static', express.static('public', {
-    maxAge: '1y', // Cache static assets for 1 year
-    etag: true, // Enable ETag for cache validation
+    maxAge: '1y',
+    etag: true,
     lastModified: true,
 }));
 
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Allow requests from your frontend
+    origin: 'http://localhost:5173',
     methods: ['GET', 'POST', 'OPTIONS', 'PUT'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
